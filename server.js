@@ -6,6 +6,323 @@ const port = process.env.PORT || 3000;
 
 app.use(cors({origin: '*'}));
 
+app.get('/api/endpoints', (req, res) => {
+    res.json({
+        message: 'Це API-сервер. Будь ласка, надсилайте запити з клієнтської сторони (браузер, Postman, fetch тощо) на конкретні ендпоінти нижче',
+        endpoints: [
+            'GET /api/info',
+            'GET /api/plus-one/:number',
+            'GET /api/sum?a=&b=',
+            'GET /api/calculate?a=&b=&operation=plus|minus|multiply|divide',
+            'GET /api/exchange-rate',
+            'GET /api/weather/:city',
+            'GET /api/cat',
+            'GET /api/gist',
+            'GET /api/odesa-fact',
+            'GET /api/joke',
+            'GET /api/advice',
+            'GET /api/quote'
+        ]
+    });
+});
+
+app.get('/', (req, res) => {
+    res.type('html').send(`<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Панель ендпоінтів</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --bg: #17181a;
+        --panel: #222427;
+        --panel-raised: #292c2f;
+        --border: #34373b;
+        --text: #ece9e4;
+        --muted: #8b8f94;
+        --amber: #ffb020;
+        --teal: #46d9c8;
+    }
+    * { box-sizing: border-box; }
+    body {
+        margin: 0;
+        background:
+            radial-gradient(circle at 15% 10%, rgba(255,176,32,0.05), transparent 40%),
+            radial-gradient(circle at 85% 90%, rgba(70,217,200,0.05), transparent 40%),
+            var(--bg);
+        color: var(--text);
+        font-family: 'Inter', sans-serif;
+        min-height: 100vh;
+        padding: 40px 20px 80px;
+    }
+    .rack {
+        max-width: 980px;
+        margin: 0 auto;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 32px 32px 40px;
+        position: relative;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+    .screw {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 35%, #55585c, #101112 70%);
+        box-shadow: inset 0 0 0 1px rgba(0,0,0,0.6);
+    }
+    .screw::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 15%;
+        right: 15%;
+        height: 1px;
+        background: rgba(0,0,0,0.7);
+        transform: rotate(35deg);
+    }
+    .screw.tl { top: 16px; left: 16px; }
+    .screw.tr { top: 16px; right: 16px; }
+    .screw.bl { bottom: 16px; left: 16px; }
+    .screw.br { bottom: 16px; right: 16px; }
+    header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 20px;
+        flex-wrap: wrap;
+        padding-bottom: 24px;
+        margin-bottom: 28px;
+        border-bottom: 1px dashed var(--border);
+    }
+    .led {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--amber);
+        box-shadow: 0 0 8px 2px rgba(255,176,32,0.7);
+        display: inline-block;
+        margin-right: 10px;
+        animation: pulse 2.4s ease-in-out infinite;
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .led { animation: none; }
+    }
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.35; }
+    }
+    h1 {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 26px;
+        letter-spacing: 0.5px;
+        margin: 0 0 8px;
+        display: flex;
+        align-items: center;
+    }
+    .subtitle {
+        color: var(--muted);
+        font-size: 14px;
+        max-width: 460px;
+        line-height: 1.6;
+        margin: 0;
+    }
+    .subtitle strong {
+        color: var(--teal);
+        font-weight: 600;
+    }
+    .badge {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        color: var(--muted);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 6px 14px;
+        white-space: nowrap;
+    }
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 14px;
+    }
+    .module {
+        background: var(--panel-raised);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 16px 18px;
+        transition: border-color 0.15s ease, transform 0.15s ease;
+    }
+    .module:hover, .module:focus-within {
+        border-color: var(--teal);
+        transform: translateY(-2px);
+    }
+    .module-top {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+    .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--teal);
+        flex-shrink: 0;
+    }
+    .method {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        color: var(--bg);
+        background: var(--amber);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-weight: 700;
+    }
+    .path {
+        display: block;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 13px;
+        color: var(--text);
+        text-decoration: none;
+        word-break: break-all;
+        margin-bottom: 8px;
+    }
+    .path:hover, .path:focus-visible {
+        color: var(--teal);
+        outline: none;
+    }
+    .desc {
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.5;
+        margin: 0;
+    }
+    footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 12px;
+        margin-top: 32px;
+        font-family: 'JetBrains Mono', monospace;
+    }
+</style>
+</head>
+<body>
+    <div class="rack">
+        <span class="screw tl"></span>
+        <span class="screw tr"></span>
+        <span class="screw bl"></span>
+        <span class="screw br"></span>
+        <header>
+            <div>
+                <h1><span class="led"></span>API RACK</h1>
+                <p class="subtitle">Це сервер, а не сторінка для перегляду. <strong>Надсилайте запити з клієнтської сторони</strong> — з коду, Postman або просто перейшовши за посиланням ендпоінта нижче.</p>
+            </div>
+            <span class="badge">15 МОДУЛІВ · ОНЛАЙН</span>
+        </header>
+        <div class="grid">
+ 
+            <div class="module">
+                <div class="module-top"><span class="dot"></span><span class="method">GET</span></div>
+                <a class="path" href="/api/info">/api/info</a>
+                <p class="desc">Особиста інформація про автора сервера</p>
+            </div>
+ 
+            <div class="module">
+                <div class="module-top"><span class="dot"></span><span class="method">GET</span></div>
+                <a class="path" href="/api/plus-one/5">/api/plus-one/:number</a>
+                <p class="desc">Повертає число, більше за передане на 1</p>
+            </div>
+ 
+            <div class="module">
+                <div class="module-top"><span class="dot"></span><span class="method">GET</span></div>
+                <a class="path" href="/api/sum?a=3&b=7">/api/sum?a=&b=</a>
+                <p class="desc">Сума двох чисел, переданих параметрами</p>
+            </div>
+ 
+            <div class="module">
+                <div class="module-top"><span class="dot"></span><span class="method">GET</span></div>
+                <a class="path" href="/api/calculate?a=10&b=2&operation=*">/api/calculate?a=&b=&operation=</a>
+                <p class="desc">Результат операції +, -, * або / над двома числами</p>
+            </div>
+ 
+            <div class="module">
+                <div class="module-top"><span class="dot"></span><span class="method">GET</span></div>
+                <a class="path" href="/api/planet-fact">/api/planet-fact</a>
+                <p class="desc">Випадковий факт про планету Сонячної системи</p>
+            </div>
+ 
+            <div class="module">
+                <div class="module-top"><span class="dot"></span><span class="method">GET</span></div>
+                <a class="path" href="/api/exchange-rate">/api/exchange-rate</a>
+                <p class="desc">Поточний курс гривня — долар США</p>
+            </div>
+ 
+            <div class="module">
+                <div class="module-top"><span class="dot"></span><span class="method">GET</span></div>
+                <a class="path" href="/api/weather/Odesa">/api/weather/:city</a>
+                <p class="desc">Прогноз погоди в місті за назвою</p>
+            </div>
+ 
+            <div class="module">
+                <div class="module-top"><span class="dot"></span><span class="method">GET</span></div>
+                <a class="path" href="/api/cat">/api/cat</a>
+                <p class="desc">Випадкове фото кота</p>
+            </div>
+ 
+            <div class="module">
+                <div class="module-top"><span class="dot"></span><span class="method">GET</span></div>
+                <a class="path" href="/api/gist">/api/gist</a>
+                <p class="desc">Випадковий гіст з акаунту sunmeat на GitHub</p>
+            </div>
+ 
+            <div class="module">
+                <div class="module-top"><span class="dot"></span><span class="method">GET</span></div>
+                <a class="path" href="/api/odesa-fact">/api/odesa-fact</a>
+                <p class="desc">Випадковий факт про місто Одеса</p>
+            </div>
+ 
+            <div class="module">
+                <div class="module-top"><span class="dot"></span><span class="method">GET</span></div>
+                <a class="path" href="/api/joke">/api/joke</a>
+                <p class="desc">Випадковий жарт</p>
+            </div>
+ 
+            <div class="module">
+                <div class="module-top"><span class="dot"></span><span class="method">GET</span></div>
+                <a class="path" href="/api/advice">/api/advice</a>
+                <p class="desc">Випадкова життєва порада</p>
+            </div>
+ 
+            <div class="module">
+                <div class="module-top"><span class="dot"></span><span class="method">GET</span></div>
+                <a class="path" href="/api/dog">/api/dog</a>
+                <p class="desc">Випадкове фото собаки</p>
+            </div>
+ 
+            <div class="module">
+                <div class="module-top"><span class="dot"></span><span class="method">GET</span></div>
+                <a class="path" href="/api/quote">/api/quote</a>
+                <p class="desc">Випадкова мотиваційна цитата</p>
+            </div>
+ 
+            <div class="module">
+                <div class="module-top"><span class="dot"></span><span class="method">GET</span></div>
+                <a class="path" href="/api/number-fact/42">/api/number-fact/:number</a>
+                <p class="desc">Цікавий факт про число</p>
+            </div>
+ 
+        </div>
+        <footer>ODESA · NODE.JS · EXPRESS</footer>
+    </div>
+</body>
+</html>`);
+});
+
 const data = {
     "name": "Олександр",
     "surname": "Загоруйко",
