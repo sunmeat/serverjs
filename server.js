@@ -10,10 +10,10 @@ app.get('/api/endpoints', (req, res) => {
     res.json({
         message: 'Це API-сервер. Будь ласка, надсилайте запити з клієнтської сторони (браузер, Postman, fetch тощо) на конкретні ендпоінти нижче',
         endpoints: [
-            'GET /api/info',
+            'GET /api/oleksandr',
             'GET /api/plus-one/:number',
             'GET /api/sum?a=&b=',
-            'GET /api/calculate?a=&b=&operation=plus|minus|multiply|divide',
+            'GET /api/calculate?a=&b=&operation=',
             'GET /api/exchange-rate',
             'GET /api/weather/:city',
             'GET /api/cat',
@@ -32,7 +32,7 @@ app.get('/', (req, res) => {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Панель ендпоінтів</title>
+<title>API Rack - панель ендпоінтів</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -222,14 +222,13 @@ app.get('/', (req, res) => {
                 <h1><span class="led"></span>API RACK</h1>
                 <p class="subtitle">Це сервер, а не сторінка для перегляду. <strong>Надсилайте запити з клієнтської сторони</strong> — з коду, Postman або просто перейшовши за посиланням ендпоінта нижче.</p>
             </div>
-            <span class="badge">15 МОДУЛІВ · ОНЛАЙН</span>
         </header>
         <div class="grid">
  
             <div class="module">
                 <div class="module-top"><span class="dot"></span><span class="method">GET</span></div>
-                <a class="path" href="/api/info">/api/info</a>
-                <p class="desc">Особиста інформація про автора сервера</p>
+                <a class="path" href="/api/oleksandr">/api/oleksandr</a>
+                <p class="desc">Факти про Олександра</p>
             </div>
  
             <div class="module">
@@ -246,14 +245,8 @@ app.get('/', (req, res) => {
  
             <div class="module">
                 <div class="module-top"><span class="dot"></span><span class="method">GET</span></div>
-                <a class="path" href="/api/calculate?a=10&b=2&operation=*">/api/calculate?a=&b=&operation=</a>
+                <a class="path" href="/api/calculate?a=10&b=2&operation=plus">/api/calculate?a=&b=&operation=</a>
                 <p class="desc">Результат операції +, -, * або / над двома числами</p>
-            </div>
- 
-            <div class="module">
-                <div class="module-top"><span class="dot"></span><span class="method">GET</span></div>
-                <a class="path" href="/api/planet-fact">/api/planet-fact</a>
-                <p class="desc">Випадковий факт про планету Сонячної системи</p>
             </div>
  
             <div class="module">
@@ -300,24 +293,10 @@ app.get('/', (req, res) => {
  
             <div class="module">
                 <div class="module-top"><span class="dot"></span><span class="method">GET</span></div>
-                <a class="path" href="/api/dog">/api/dog</a>
-                <p class="desc">Випадкове фото собаки</p>
-            </div>
- 
-            <div class="module">
-                <div class="module-top"><span class="dot"></span><span class="method">GET</span></div>
                 <a class="path" href="/api/quote">/api/quote</a>
                 <p class="desc">Випадкова мотиваційна цитата</p>
             </div>
- 
-            <div class="module">
-                <div class="module-top"><span class="dot"></span><span class="method">GET</span></div>
-                <a class="path" href="/api/number-fact/42">/api/number-fact/:number</a>
-                <p class="desc">Цікавий факт про число</p>
-            </div>
- 
         </div>
-        <footer>ODESA · NODE.JS · EXPRESS</footer>
     </div>
 </body>
 </html>`);
@@ -341,7 +320,7 @@ const data = {
     "facts": [
         "Викладач програмування",
         "Вважає, що викладання — це покликання, а не просто робота",
-        "Користується Duolingo вже 1471+ днів для вивчення французької",
+        "Користується Duolingo вже 1471+ днів для вивчення французької / гри в шахи",
         "Любить котів і собак",
         "Вирощує авокадо, сукуленти та тангори муркотт",
         "Вважає себе схожим на сукулент, адже виживає в якихось надскладних умовах",
@@ -359,13 +338,13 @@ const data = {
         "Розробляє андроїд-додаток для вивчення гри на сопілці",
         "Грає на фортепіано, мелодиці, акордеоні/виборному баяні, сопілці/блок-флейті, варгані/дримбі, укулеле, калимбі, отаматоні, трикутнику та бубні",
         "Вивчає гру на гітарі",
-        "Любить співати в караоке",
         "Намагається перенести свій старий проєкт з ActionScript на HTML/JavaScript",
-        "Створював Telegram-ботів на Python та C#"
+        "Створював Telegram-ботів на Python та C#",
+        "Любить співати в караоке"
     ]
 };
 
-app.get('/api/info', (req, res) => {
+app.get('/api/oleksandr', (req, res) => {
     res.json(data);
 });
 
@@ -406,6 +385,50 @@ app.get('/api/calculate', (req, res) => {
             return res.status(400).json({error: 'некоректна операція'});
     }
     res.json({result});
+});
+
+const planetNamesUk = {
+    "Mercure": "Меркурій",
+    "Venus": "Венера",
+    "Terre": "Земля",
+    "Mars": "Марс",
+    "Jupiter": "Юпітер",
+    "Saturne": "Сатурн",
+    "Uranus": "Уран",
+    "Neptune": "Нептун"
+};
+
+app.get('/api/planet-fact', async (req, res) => {
+    try {
+        const response = await fetch('https://api.le-systeme-solaire.net/rest/bodies/');
+        const solarSystem = await response.json();
+        const planets = solarSystem.bodies.filter(b => b.isPlanet);
+        const planet = planets[Math.floor(Math.random() * planets.length)];
+        const name = planetNamesUk[planet.name] || planet.englishName;
+
+        const templates = [
+            () => `${name} має ${planet.moons ? planet.moons.length : 0} відомих супутників`,
+            () => `Гравітація на планеті ${name} становить ${planet.gravity} м/с²`,
+            () => `Середній радіус планети ${name} дорівнює ${planet.meanRadius} км`,
+            () => `Маса планети ${name} становить приблизно ${planet.mass.massValue}×10^${planet.mass.massExponent} кг`,
+            () => `Один оберт навколо Сонця планета ${name} здійснює за ${planet.sideralOrbit} земних діб`,
+            () => `Доба на планеті ${name} триває ${Math.abs(planet.sideralRotation)} годин`
+        ];
+
+        const validTemplates = templates.filter(t => {
+            try {
+                const result = t();
+                return !result.includes('undefined') && !result.includes('null');
+            } catch {
+                return false;
+            }
+        });
+
+        const fact = validTemplates[Math.floor(Math.random() * validTemplates.length)]();
+        res.json({fact});
+    } catch (e) {
+        res.status(500).json({error: 'не вдалося отримати факт про планету'});
+    }
 });
 
 app.get('/api/exchange-rate', async (req, res) => {
@@ -498,8 +521,8 @@ app.listen(port, () => {
     console.log(`Сервер запущено на порту ${port}`);
 });
 
-/*
-http://localhost:3000/api/info
+/* // local endpoints:
+http://localhost:3000/api/oleksandr
 http://localhost:3000/api/plus-one/5
 http://localhost:3000/api/sum?a=3&b=7
 http://localhost:3000/api/calculate?a=10&b=2&operation=plus
