@@ -26,6 +26,17 @@ app.get('/api/endpoints', (req, res) => {
     });
 });
 
+/* app.get('/api/file', (req, res) => {
+    const filePath = 'C:\\1\\test.txt';
+
+    res.sendFile(filePath, (err) => {
+        if (err) {
+            console.error(err);
+            return res.status(404).json({ error: 'Файл test.txt не знайдено' });
+        }
+    });
+}); */
+
 app.get('/', (req, res) => {
     res.type('html').send(`<!DOCTYPE html>
 <html lang="uk">
@@ -385,50 +396,6 @@ app.get('/api/calculate', (req, res) => {
             return res.status(400).json({error: 'некоректна операція'});
     }
     res.json({result});
-});
-
-const planetNamesUk = {
-    "Mercure": "Меркурій",
-    "Venus": "Венера",
-    "Terre": "Земля",
-    "Mars": "Марс",
-    "Jupiter": "Юпітер",
-    "Saturne": "Сатурн",
-    "Uranus": "Уран",
-    "Neptune": "Нептун"
-};
-
-app.get('/api/planet-fact', async (req, res) => {
-    try {
-        const response = await fetch('https://api.le-systeme-solaire.net/rest/bodies/');
-        const solarSystem = await response.json();
-        const planets = solarSystem.bodies.filter(b => b.isPlanet);
-        const planet = planets[Math.floor(Math.random() * planets.length)];
-        const name = planetNamesUk[planet.name] || planet.englishName;
-
-        const templates = [
-            () => `${name} має ${planet.moons ? planet.moons.length : 0} відомих супутників`,
-            () => `Гравітація на планеті ${name} становить ${planet.gravity} м/с²`,
-            () => `Середній радіус планети ${name} дорівнює ${planet.meanRadius} км`,
-            () => `Маса планети ${name} становить приблизно ${planet.mass.massValue}×10^${planet.mass.massExponent} кг`,
-            () => `Один оберт навколо Сонця планета ${name} здійснює за ${planet.sideralOrbit} земних діб`,
-            () => `Доба на планеті ${name} триває ${Math.abs(planet.sideralRotation)} годин`
-        ];
-
-        const validTemplates = templates.filter(t => {
-            try {
-                const result = t();
-                return !result.includes('undefined') && !result.includes('null');
-            } catch {
-                return false;
-            }
-        });
-
-        const fact = validTemplates[Math.floor(Math.random() * validTemplates.length)]();
-        res.json({fact});
-    } catch (e) {
-        res.status(500).json({error: 'не вдалося отримати факт про планету'});
-    }
 });
 
 app.get('/api/exchange-rate', async (req, res) => {
